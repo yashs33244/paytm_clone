@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+user-app:
+  build:
+    context: .
+    dockerfile: docker/Dockerfile.user
+  environment:
+    DATABASE_URL: postgres://postgres:mysecretpassword@postgres:5432/postgres
+    JWT_SECRET: "test" # Add other environment variables as needed
+  ports:
+    - "3000:3000"
+  depends_on:
+    - postgres
+  volumes:
+    - .:/usr/src/app
+
+volumes:
+  postgres-data:
